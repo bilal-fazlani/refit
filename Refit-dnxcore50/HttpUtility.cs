@@ -1,7 +1,3 @@
-#if !SILVERLIGHT || WINDOWS_PHONE || WINDOWS_APP
-#define NET_4_0
-#endif
-
 // 
 // System.Web.HttpUtility
 //
@@ -33,27 +29,17 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Globalization;
 using System.IO;
-#if !WINDOWS_APP
-using System.Security.Permissions;
-#endif
+using System.Linq;
 using System.Text;
 
 namespace System.Web
 {
-
-    //#if !MONOTOUCH
-    //    // CAS - no InheritanceDemand here as the class is sealed
-    //    [AspNetHostingPermission(SecurityAction.LinkDemand, Level = AspNetHostingPermissionLevel.Minimal)]
-    //#endif
     internal sealed class HttpUtility
     {
-        sealed class HttpQSCollection : NameValueCollection
+        sealed class HttpQSCollection : Dictionary<string,string>
         {
             public override string ToString()
             {
@@ -61,7 +47,7 @@ namespace System.Web
                 if (count == 0)
                     return "";
                 StringBuilder sb = new StringBuilder();
-                string[] keys = AllKeys;
+                string[] keys = Keys.ToArray();
                 for (int i = 0; i < count; i++)
                 {
                     sb.AppendFormat("{0}={1}&", keys[i], this[keys[i]]);
@@ -86,24 +72,13 @@ namespace System.Web
         {
             if (output == null)
             {
-                #if NET_4_0
-                throw new ArgumentNullException ("output");
-                #else
-                throw new NullReferenceException(".NET emulation");
-                #endif
+                throw new ArgumentNullException (nameof(output));
             }
-            #if NET_4_0
             HttpEncoder.Current.HtmlAttributeEncode (s, output);
-            #elif SILVERLIGHT && !WINDOWS_PHONE
-                output.Write(Windows.Browser.HttpUtility.HtmlEncode(s));
-            #else
-            output.Write(HttpEncoder.HtmlAttributeEncode(s));
-            #endif
         }
 
         public static string HtmlAttributeEncode(string s)
         {
-            #if NET_4_0
             if (s == null)
                 return null;
 
@@ -111,11 +86,6 @@ namespace System.Web
                 HttpEncoder.Current.HtmlAttributeEncode (s, sw);
                 return sw.ToString ();
             }
-            #elif SILVERLIGHT && !WINDOWS_PHONE
-            return Windows.Browser.HttpUtility.HtmlEncode(s);
-            #else
-            return HttpEncoder.HtmlAttributeEncode(s);
-            #endif
         }
 
         public static string UrlDecode(string str)
@@ -125,11 +95,7 @@ namespace System.Web
 
         static char[] GetChars(MemoryStream b, Encoding e)
         {
-#if !WINDOWS_APP
-            return e.GetChars(b.GetBuffer(), 0, (int)b.Length);
-#else
             return e.GetChars(b.ToArray(), 0, (int) b.Length);
-#endif
         }
 
         static void WriteCharBytes(IList buf, char ch, Encoding e)
@@ -486,11 +452,7 @@ namespace System.Web
         {
             if (bytes == null)
                 return null;
-            #if NET_4_0
             return HttpEncoder.Current.UrlEncode (bytes, offset, count);
-            #else
-            return HttpEncoder.UrlEncodeToBytes(bytes, offset, count);
-            #endif
         }
 
         public static string UrlEncodeUnicode(string str)
@@ -525,7 +487,6 @@ namespace System.Web
         /// <returns>The decoded text.</returns>
         public static string HtmlDecode(string s)
         {
-            #if NET_4_0
             if (s == null)
                 return null;
 
@@ -533,9 +494,6 @@ namespace System.Web
                 HttpEncoder.Current.HtmlDecode (s, sw);
                 return sw.ToString ();
             }
-            #else
-            return HttpEncoder.HtmlDecode(s);
-            #endif
         }
 
         /// <summary>
@@ -547,26 +505,17 @@ namespace System.Web
         {
             if (output == null)
             {
-                #if NET_4_0
-                throw new ArgumentNullException ("output");
-                #else
-                throw new NullReferenceException(".NET emulation");
-                #endif
+                throw new ArgumentNullException (nameof(output));
             }
 
             if (!String.IsNullOrEmpty(s))
             {
-                #if NET_4_0
                 HttpEncoder.Current.HtmlDecode (s, output);
-                #else
-                output.Write(HttpEncoder.HtmlDecode(s));
-                #endif
             }
         }
 
         public static string HtmlEncode(string s)
         {
-            #if NET_4_0
             if (s == null)
                 return null;
 
@@ -574,9 +523,6 @@ namespace System.Web
                 HttpEncoder.Current.HtmlEncode (s, sw);
                 return sw.ToString ();
             }
-            #else
-            return HttpEncoder.HtmlEncode(s);
-            #endif
         }
 
         /// <summary>
@@ -588,23 +534,15 @@ namespace System.Web
         {
             if (output == null)
             {
-                #if NET_4_0
-                throw new ArgumentNullException ("output");
-                #else
-                throw new NullReferenceException(".NET emulation");
-                #endif
+                throw new ArgumentNullException (nameof(output));
             }
 
             if (!String.IsNullOrEmpty(s))
             {
-                #if NET_4_0
                 HttpEncoder.Current.HtmlEncode (s, output);
-                #else
-                output.Write(HttpEncoder.HtmlEncode(s));
-                #endif
             }
         }
-        #if NET_4_0
+
         public static string HtmlEncode (object value)
         {
             throw new NotImplementedException();
@@ -683,40 +621,34 @@ namespace System.Web
 
             return sb.ToString ();
         }
-        #endif
+        
         public static string UrlPathEncode(string s)
         {
-            #if NET_4_0
             return HttpEncoder.Current.UrlPathEncode (s);
-            #elif SILVERLIGHT
-            return Windows.Browser.HttpUtility.UrlEncode(s);
-            #else
-            return HttpEncoder.UrlPathEncode(s);
-            #endif
         }
 
-        public static NameValueCollection ParseQueryString(string query)
+        public static Dictionary<string, string> ParseQueryString(string query)
         {
             return ParseQueryString(query, Encoding.UTF8);
         }
 
-        public static NameValueCollection ParseQueryString(string query, Encoding encoding)
+        public static Dictionary<string, string> ParseQueryString(string query, Encoding encoding)
         {
             if (query == null)
                 throw new ArgumentNullException("query");
             if (encoding == null)
                 throw new ArgumentNullException("encoding");
             if (query.Length == 0 || (query.Length == 1 && query[0] == '?'))
-                return new NameValueCollection();
+                return new Dictionary<string, string>();
             if (query[0] == '?')
                 query = query.Substring(1);
 
-            NameValueCollection result = new HttpQSCollection();
+            Dictionary<string, string> result = new HttpQSCollection();
             ParseQueryString(query, encoding, result);
             return result;
         }
 
-        internal static void ParseQueryString(string query, Encoding encoding, NameValueCollection result)
+        internal static void ParseQueryString(string query, Encoding encoding, Dictionary<string, string> result)
         {
             if (query.Length == 0)
                 return;
