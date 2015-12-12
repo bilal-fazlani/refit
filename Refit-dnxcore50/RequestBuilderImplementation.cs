@@ -49,9 +49,7 @@ namespace Refit
                 .ToDictionary(k => k.Name, v => v);
         }
 
-        public IEnumerable<string> InterfaceHttpMethods {
-            get { return interfaceHttpMethods.Keys; }
-        }
+        public IEnumerable<string> InterfaceHttpMethods => interfaceHttpMethods.Keys;
 
         Func<object[], HttpRequestMessage> buildRequestFactoryForMethod(string methodName, string basePath, bool paramsContainsCancellationToken)
         {

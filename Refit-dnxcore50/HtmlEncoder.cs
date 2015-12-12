@@ -68,7 +68,7 @@ namespace System.Web
 
 		    set {
 				if (value == null)
-					throw new ArgumentNullException ("value");
+					throw new ArgumentNullException (nameof(value));
 				currentEncoder = value;
 			}
 		}
@@ -86,19 +86,13 @@ namespace System.Web
 		}
 
         protected internal virtual void HeaderNameValueEncode(string headerName, string headerValue, out string encodedHeaderName, out string encodedHeaderValue)
-		{
-			if (String.IsNullOrEmpty(headerName))
-				encodedHeaderName = headerName;
-			else
-				encodedHeaderName = EncodeHeaderString(headerName);
+        {
+            encodedHeaderName = string.IsNullOrEmpty(headerName) ? headerName : EncodeHeaderString(headerName);
 
-			if (String.IsNullOrEmpty(headerValue))
-				encodedHeaderValue = headerValue;
-			else
-				encodedHeaderValue = EncodeHeaderString(headerValue);
-		}
+            encodedHeaderValue = string.IsNullOrEmpty(headerValue) ? headerValue : EncodeHeaderString(headerValue);
+        }
 
-		static void StringBuilderAppend(string s, ref StringBuilder sb)
+        private static void StringBuilderAppend(string s, ref StringBuilder sb)
 		{
 			if (sb == null)
 				sb = new StringBuilder(s);
@@ -116,20 +110,17 @@ namespace System.Web
 				ch = input[i];
 
 				if ((ch < 32 && ch != 9) || ch == 127)
-					StringBuilderAppend(String.Format("%{0:x2}", (int)ch), ref sb);
+					StringBuilderAppend(string.Format("%{0:x2}", (int)ch), ref sb);
 			}
 
-			if (sb != null)
-				return sb.ToString();
-
-			return input;
+			return sb != null ? sb.ToString() : input;
 		}
 	
 		protected internal virtual void HtmlAttributeEncode (string value, TextWriter output)
 		{
 
 			if (output == null)
-				throw new ArgumentNullException ("output");
+				throw new ArgumentNullException (nameof(output));
 
 			if (String.IsNullOrEmpty (value))
 				return;
@@ -140,7 +131,7 @@ namespace System.Web
 		protected internal virtual void HtmlDecode (string value, TextWriter output)
 		{
 			if (output == null)
-				throw new ArgumentNullException ("output");
+				throw new ArgumentNullException (nameof(output));
 
 			output.Write (HtmlDecode (value));
 		}
@@ -148,7 +139,7 @@ namespace System.Web
 		protected internal virtual void HtmlEncode (string value, TextWriter output)
 		{
 			if (output == null)
-				throw new ArgumentNullException ("output");
+				throw new ArgumentNullException (nameof(output));
 
 			output.Write (HtmlEncode (value));
 		}
@@ -180,17 +171,17 @@ namespace System.Web
 		internal static byte[] UrlEncodeToBytes(byte[] bytes, int offset, int count)
 		{
 			if (bytes == null)
-				throw new ArgumentNullException("bytes");
+				throw new ArgumentNullException(nameof(bytes));
 
 			int blen = bytes.Length;
 			if (blen == 0)
 				return new byte[0];
 
 			if (offset < 0 || offset >= blen)
-				throw new ArgumentOutOfRangeException("offset");
+				throw new ArgumentOutOfRangeException(nameof(offset));
 
 			if (count < 0 || count > blen - offset)
-				throw new ArgumentOutOfRangeException("count");
+				throw new ArgumentOutOfRangeException(nameof(count));
 
 			MemoryStream result = new MemoryStream(count);
 			int end = offset + count;
@@ -391,14 +382,7 @@ namespace System.Web
 					{
 						number = 0;
 						is_hex_value = false;
-						if (c != '#')
-						{
-							state = 2;
-						}
-						else
-						{
-							state = 3;
-						}
+						state = c != '#' ? 2 : 3;
 						entity.Append(c);
 
 						rawEntity.Append (c);
@@ -568,9 +552,9 @@ namespace System.Web
 				for (int i = 0; i < bIn.Length; i++)
 				{
 					result.WriteByte((byte)'%');
-					int idx = ((int)bIn[i]) >> 4;
+					int idx = i >> 4;
 					result.WriteByte((byte)hexChars[idx]);
-					idx = ((int)bIn[i]) & 0x0F;
+					idx = i & 0x0F;
 					result.WriteByte((byte)hexChars[idx]);
 				}
 			}
