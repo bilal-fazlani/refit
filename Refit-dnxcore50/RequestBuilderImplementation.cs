@@ -159,8 +159,8 @@ namespace Refit
                     query.Add(kvp.Key, kvp.Value);
                 }
 
-                if (query.HasKeys()) {
-                    var pairs = query.Keys.Cast<string>().Select(x => HttpUtility.UrlEncode(x) + "=" + HttpUtility.UrlEncode(query[x]));
+                if (query.Any()) {
+                    var pairs = query.Keys.Select(x => HttpUtility.UrlEncode(x) + "=" + HttpUtility.UrlEncode(query[x]));
                     uri.Query = String.Join("&", pairs);
                 } else {
                     uri.Query = null;

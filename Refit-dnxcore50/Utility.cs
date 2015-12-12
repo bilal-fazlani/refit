@@ -12,8 +12,7 @@ namespace Refit
             yield return value;
         }
     }
-#if WINDOWS_APP
-    // Shims for old-style reflection
+
     static class ReflectionExtensions
     {
         public static bool IsInterface(this Type type) 
@@ -72,20 +71,5 @@ namespace Refit
         Public = 16,
         NonPublic = 32
     }
-
-#else
-    static class ReflectionExtensions
-    {
-        public static bool IsInterface(this Type type) 
-        {            
-            return type.IsInterface;
-        }
-
-        public static bool IsGenericType(this Type type) 
-        {
-            return type.IsGenericType;
-        }
-    }
-#endif
 }
 

@@ -39,15 +39,5 @@ namespace Refit
             return ForType(typeof(T), null);
         }
     }
-
-#if PORTABLE
-    class RequestBuilderFactory : IRequestBuilderFactory
-    {
-        public IRequestBuilder Create(Type interfaceType, RefitSettings settings = null)
-        {
-            throw new NotImplementedException("You've somehow included the PCL version of Refit in your app. You need to use the platform-specific version!");
-        }
-    }
-#endif
 }
 
