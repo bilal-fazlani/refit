@@ -329,10 +329,10 @@ namespace System.Web
 
             int len = bytes.Length;
             if (offset < 0 || offset >= len)
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
 
             if (count < 0 || offset > len - count)
-                throw new ArgumentOutOfRangeException("count");
+                throw new ArgumentOutOfRangeException(nameof(count));
 
             MemoryStream result = new MemoryStream();
             int end = offset + count;
@@ -363,7 +363,7 @@ namespace System.Web
             return UrlEncode(str, Encoding.UTF8);
         }
 
-        public static string UrlEncode(string s, Encoding Enc)
+        public static string UrlEncode(string s, Encoding encoding)
         {
             if (s == null)
                 return null;
@@ -390,8 +390,8 @@ namespace System.Web
                 return s;
 
             // avoided GetByteCount call
-            byte[] bytes = new byte[Enc.GetMaxByteCount(s.Length)];
-            int realLen = Enc.GetBytes(s, 0, s.Length, bytes, 0);
+            byte[] bytes = new byte[encoding.GetMaxByteCount(s.Length)];
+            int realLen = encoding.GetBytes(s, 0, s.Length, bytes, 0);
             var encodedBytes = UrlEncodeToBytes(bytes, 0, realLen);
             return Encoding.UTF8.GetString(encodedBytes, 0, encodedBytes.Length);
         }
@@ -543,6 +543,7 @@ namespace System.Web
             }
         }
 
+        //I dont know why this is present
         public static string HtmlEncode (object value)
         {
             throw new NotImplementedException();
@@ -635,9 +636,9 @@ namespace System.Web
         public static Dictionary<string, string> ParseQueryString(string query, Encoding encoding)
         {
             if (query == null)
-                throw new ArgumentNullException("query");
+                throw new ArgumentNullException(nameof(query));
             if (encoding == null)
-                throw new ArgumentNullException("encoding");
+                throw new ArgumentNullException(nameof(encoding));
             if (query.Length == 0 || (query.Length == 1 && query[0] == '?'))
                 return new Dictionary<string, string>();
             if (query[0] == '?')

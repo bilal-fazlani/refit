@@ -10,8 +10,9 @@ using System.Text.RegularExpressions;
 using System.Text;
 using Newtonsoft.Json;
 using System.IO;
-using HttpUtility = System.Web.HttpUtility;
 using System.Threading;
+using System.Web;
+using Uri = System.Uri;
 
 namespace Refit
 {
@@ -218,7 +219,6 @@ namespace Refit
                 return;
             }
 
-#if !NETFX_CORE
             var fileInfoValue = itemValue as FileInfo;
             if (fileInfoValue != null) {
                 var fileContent = new StreamContent(fileInfoValue.OpenRead());
@@ -228,7 +228,6 @@ namespace Refit
                 multiPartContent.Add(fileContent);
                 return;
             }
-#endif
 
             if (byteArrayValue != null) {
                 var fileContent = new ByteArrayContent(byteArrayValue);

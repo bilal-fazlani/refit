@@ -1,5 +1,4 @@
-﻿
-//
+﻿//
 // Authors:
 //   Patrik Torstensson (Patrik.Torstensson@labs2.com)
 //   Wictor WilÃ©n (decode/encode functions) (wictor@ibizkit.se)
@@ -40,12 +39,12 @@ namespace System.Web
 {
     public class HttpEncoder
 	{
-		static char[] hexChars = "0123456789abcdef".ToCharArray();
-		static object entitiesLock = new object();
+		static readonly char[] hexChars = "0123456789abcdef".ToCharArray();
+		static readonly object entitiesLock = new object();
 		static List<KeyValuePair<string, char>> entities;
 
-		static Lazy <HttpEncoder> defaultEncoder;
-		static Lazy <HttpEncoder> currentEncoderLazy;
+		static readonly Lazy <HttpEncoder> defaultEncoder;
+		static readonly Lazy <HttpEncoder> currentEncoderLazy;
 
 		static HttpEncoder currentEncoder;
 
@@ -213,8 +212,7 @@ namespace System.Web
 			for (int i = 0; i < s.Length; i++)
 			{
 				char c = s[i];
-				if (c == '&' || c == '"' || c == '<' || c == '>' || c > 159 || c == '\''
-)
+				if (c == '&' || c == '"' || c == '<' || c == '>' || c > 159 || c == '\'')
 				{
 					needEncode = true;
 					break;

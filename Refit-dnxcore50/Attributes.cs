@@ -8,12 +8,13 @@ namespace Refit
         public abstract HttpMethod Method { get; }
 
         protected string path;
+
         public virtual string Path {
             get { return path; }
             protected set { path = value; }
         }
 
-        public HttpMethodAttribute(string path)
+        protected HttpMethodAttribute(string path)
         {
             Path = path;
         }
@@ -24,9 +25,7 @@ namespace Refit
     {
         public GetAttribute(string path) : base(path) {}
 
-        public override HttpMethod Method {
-            get { return HttpMethod.Get; }
-        }
+        public override HttpMethod Method => HttpMethod.Get;
     }
 
     [AttributeUsage(AttributeTargets.Method)]
@@ -34,9 +33,7 @@ namespace Refit
     {
         public PostAttribute(string path) : base(path) {}
 
-        public override HttpMethod Method {
-            get { return HttpMethod.Post; }
-        }
+        public override HttpMethod Method => HttpMethod.Post;
     }
 
     [AttributeUsage(AttributeTargets.Method)]
@@ -44,9 +41,7 @@ namespace Refit
     {
         public PutAttribute(string path) : base(path) {}
 
-        public override HttpMethod Method {
-            get { return HttpMethod.Put; }
-        }
+        public override HttpMethod Method => HttpMethod.Put;
     }
 
     [AttributeUsage(AttributeTargets.Method)]
@@ -54,9 +49,7 @@ namespace Refit
     {
         public DeleteAttribute(string path) : base(path) {}
 
-        public override HttpMethod Method {
-            get { return HttpMethod.Delete; }
-        }
+        public override HttpMethod Method => HttpMethod.Delete;
     }
 
     [AttributeUsage(AttributeTargets.Method)]
@@ -64,9 +57,7 @@ namespace Refit
     {
         public PatchAttribute(string path) : base(path) { }
 
-        public override HttpMethod Method {
-            get { return new HttpMethod("PATCH"); }
-        }
+        public override HttpMethod Method => new HttpMethod("PATCH");
     }
         
     [AttributeUsage(AttributeTargets.Method)]
@@ -74,9 +65,7 @@ namespace Refit
     {
         public HeadAttribute(string path) : base(path) {}
 
-        public override HttpMethod Method {
-            get { return HttpMethod.Head; }
-        }
+        public override HttpMethod Method => HttpMethod.Head;
     }
 
     [AttributeUsage(AttributeTargets.Method)]
@@ -102,6 +91,7 @@ namespace Refit
     public class AliasAsAttribute : Attribute
     {
         public string Name { get; protected set; }
+
         public AliasAsAttribute(string name)
         {
             this.Name = name;
@@ -112,6 +102,7 @@ namespace Refit
     public class AttachmentNameAttribute : Attribute
     {
         public string Name { get; protected set; }
+
         public AttachmentNameAttribute(string name)
         {
             Name = name;
